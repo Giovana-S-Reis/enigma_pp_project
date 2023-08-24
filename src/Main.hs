@@ -47,23 +47,34 @@ alternarJogador 1 = 2
 alternarJogador 2 = 1
 alternarJogador _ = 1
 
+adivinharPalavra :: String -> String -> IO Bool
+adivinharPalavra palavra tentativa = return (map toUpper palavra == map toUpper tentativa)
 
 
--- Funcao que realiza o jogo e o loop do jogo, verificando se ainda restam numero de tentativas e apresentando imagem da forca
+-- Funcao que realiza o jogo e o loop do jogo, verificando se ainda restam numero de tentativas
 jogo :: String -> Int -> IO ()
 jogo palavra tentativas
-	| palavra == map toUpper palavra = do
-		putStrLn $ mostrarPalavra palavra
-		putStrLn ("Voce Ganhou! "++ palavra ++ " está livre do bombardeio.") 
-	| tentativas == 0 = do
-		putStrLn $ mostrarPalavra palavra
-		putStrLn ("Voce Perdeu..." ++ palavra ++ " sofreu um bombardeio.")
-	| otherwise = do
-		putStrLn $ "Voce tem " ++ show tentativas ++ " tentativas restantes."
-		putStrLn $ mostrarPalavra palavra
-		putStr "Digite uma letra: "
-		tentativaDeLetra <- getLine
-		tentarLetra palavra (head tentativaDeLetra) tentativas
+    | palavra == map toUpper palavra = do
+        putStrLn $ mostrarPalavra palavra
+        putStrLn ("Voce Ganhou! "++ map toUpper palavra ++ " está livre do bombardeio.") 
+    | tentativas == 0 = do
+        putStrLn $ mostrarPalavra palavra
+        putStrLn ("Voce Perdeu..." ++ map toUpper palavra ++ " sofreu um bombardeio.")
+    | otherwise = do
+        putStrLn $ "Voce tem " ++ show tentativas ++ " tentativas restantes."
+        putStrLn $ mostrarPalavra palavra
+        putStr "Digite uma letra ou tente adivinhar o nome do país: "
+        tentativaDeLetra <- getLine
+        if length tentativaDeLetra == 1
+            then do
+                tentarLetra palavra (head tentativaDeLetra) tentativas
+            else do
+                acertouPalavra <- adivinharPalavra palavra tentativaDeLetra
+                if acertouPalavra
+                    then putStrLn ("Voce Ganhou! "++ map toUpper palavra ++ " está livre do bombardeio.") 
+                    else do
+                        putStrLn ("Voce Perdeu..." ++ map toUpper palavra ++ " sofreu um bombardeio.")
+
 
 -- Inicia o jogo
 main :: IO ()
