@@ -5,7 +5,7 @@ import System.Random (randomIO)
 import Control.Applicative
 import Path_paises
 import Cesar
-
+import System.Timeout (timeout)
 
 --Declaração do número máximo de erros
 numeroMaxErros :: Int
@@ -47,15 +47,17 @@ alternarJogador 1 = 2
 alternarJogador 2 = 1
 alternarJogador _ = 1
 
+
+
 -- Funcao que realiza o jogo e o loop do jogo, verificando se ainda restam numero de tentativas e apresentando imagem da forca
 jogo :: String -> Int -> IO ()
 jogo palavra tentativas
 	| palavra == map toUpper palavra = do
 		putStrLn $ mostrarPalavra palavra
-		putStrLn "Voce Ganhou!"
+		putStrLn ("Voce Ganhou! "++ palavra ++ " está livre do bombardeio.") 
 	| tentativas == 0 = do
 		putStrLn $ mostrarPalavra palavra
-		putStrLn "Voce Perdeu..."
+		putStrLn ("Voce Perdeu..." ++ palavra ++ " sofreu um bombardeio.")
 	| otherwise = do
 		putStrLn $ "Voce tem " ++ show tentativas ++ " tentativas restantes."
 		putStrLn $ mostrarPalavra palavra
@@ -64,12 +66,19 @@ jogo palavra tentativas
 		tentarLetra palavra (head tentativaDeLetra) tentativas
 
 -- Inicia o jogo
-main :: IO()
+main :: IO ()
 main = do
-	hSetBuffering stdout NoBuffering --
-	putStrLn "Bem vindo ao Enigma!"
-        putStrLn "O Exercito Nazista decidiu bombardear um país. Com sorte interceptamos a mensagem com o nome! Agora o seu dever é decodificar a mensagem antes que o bombardeio ocorra!"
-	putStrLn "Mas cuidado, suspeitamos de um espião entre nós. É possível que sempre que você adivinhe uma letra a criptografia mude."
-	palavra <- sorteiaPalavra
-	jogo (map toLower palavra) numeroMaxErros
-	putStrLn "Obrigado por jogar! :)"		
+    hSetBuffering stdout NoBuffering
+    putStrLn "Bem vindo ao Enigma!\nO Exercito Nazista decidiu bombardear um país. Com sorte interceptamos a mensagem com o nome! Agora o seu dever é decodificar a mensagem antes que o bombardeio ocorra!\nMas cuidado, suspeitamos de um espião entre nós. É possível que sempre que você adivinhe uma letra a criptografia mude."
+    palavra <- sorteiaPalavra
+
+    -- Defina o tempo total de jogo em microssegundos (5 minutos)
+    let tempoTotal = 300 * 1000000
+
+    -- Use a função timeout para limitar o tempo total de jogo
+    mResultado <- timeout tempoTotal (jogo (map toLower palavra) numeroMaxErros)
+
+    -- Verifique o resultado do jogo
+    case mResultado of
+        Just () -> putStrLn "Obrigado por jogar! :)"
+        Nothing -> putStrLn ("Tempo esgotado! " ++ palavra ++ " sofreu um bombardeio.")
