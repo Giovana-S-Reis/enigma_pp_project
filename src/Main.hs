@@ -67,7 +67,9 @@ jogo palavra tentativas
 main :: IO()
 main = do
 	hSetBuffering stdout NoBuffering --
-	putStrLn "Bem vindo ao Jogo da Forca"
+	putStrLn "Bem vindo ao Enigma!"
+        putStrLn "O Exercito Nazista decidiu bombardear um país. Com sorte interceptamos a mensagem com o nome! Agora o seu dever é decodificar a mensagem antes que o bombardeio ocorra!"
+	putStrLn "Mas cuidado, suspeitamos de um espião entre nós. É possível que sempre que você adivinhe uma letra a criptografia mude."
 	palavra <- sorteiaPalavra
 	jogo (map toLower palavra) numeroMaxErros
 	putStrLn "Obrigado por jogar! :)"		
