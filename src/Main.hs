@@ -65,15 +65,19 @@ jogo palavra tentativas
         putStrLn $ mostrarPalavra palavra
         putStr "Digite uma letra ou tente adivinhar o nome do país: "
         tentativaDeLetra <- getLine
-        if length tentativaDeLetra == 1
+        if null tentativaDeLetra
             then do
-                tentarLetra palavra (head tentativaDeLetra) tentativas
-            else do
-                acertouPalavra <- adivinharPalavra palavra tentativaDeLetra
-                if acertouPalavra
-                    then putStrLn ("Voce Ganhou! "++ map toUpper palavra ++ " está livre do bombardeio.") 
-                    else do
-                        putStrLn ("Voce Perdeu..." ++ map toUpper palavra ++ " sofreu um bombardeio.")
+                putStrLn "Nenhuma letra digitada. Por favor, tente novamente."
+                jogo palavra tentativas
+            else if length tentativaDeLetra == 1
+                then do
+                    tentarLetra palavra (head tentativaDeLetra) tentativas
+                else do
+                    acertouPalavra <- adivinharPalavra palavra tentativaDeLetra
+                    if acertouPalavra
+                        then putStrLn ("Voce Ganhou! "++ map toUpper palavra ++ " está livre do bombardeio.") 
+                        else do
+                            putStrLn ("Tentativa incorreta! " ++ map toUpper palavra ++ " sofreu um bombardeio.")
 
 
 -- Inicia o jogo
@@ -92,4 +96,4 @@ main = do
     -- Verifique o resultado do jogo
     case mResultado of
         Just () -> putStrLn "Obrigado por jogar! :)"
-        Nothing -> putStrLn ("Tempo esgotado! " ++ palavra ++ " sofreu um bombardeio.")
+        Nothing -> putStrLn ("Tempo esgotado! " ++ map toUpper palavra ++ " sofreu um bombardeio.")
